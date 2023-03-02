@@ -12,10 +12,8 @@ import pandas as pd
 import argparse
 
 #capture the query ID
-arg_parse = argparse.ArgumentParser(description='This script extracts or remove\
-s fasta sequences by sequence IDs.')
-arg_parse.add_argument('ID', type=str, nargs=1, help='Input UNIPROT ID (require\
-d)')
+arg_parse = argparse.ArgumentParser(description='Basic-ass-script, supply UniProtID, receive sweet amino acids.')
+arg_parse.add_argument('ID', type=str, nargs=1, help='Input UNIPROT ID (required)')
 args = arg_parse.parse_args()
 uniprot_id = args.ID[0]
 
