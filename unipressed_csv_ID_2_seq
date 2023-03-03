@@ -22,6 +22,9 @@ uniprot_id = args.input_file[0]
 #flag for future - make more responsive/error proof for input file encoding...
 data = pd.read_csv(uniprot_id, encoding='windows-1252')
 
+#nb include this to avoid truncation by to_string function!
+pd.options.display.max_colwidth = 2000
+
 def id_2_fasta(id):
     id=str(id)
     #access entry
