@@ -1,0 +1,48 @@
+"""
+Script to implement /new/ Unipressed API client (https://github.com/multimeric/Unipressed)
+Input: Csv file, with column titled 'Accessions', containing UniProt entry IDs
+Returns: Csv file, as input with additional column 'sequence' containing the fetched amino acid sequence
+Author: A. Kate Falà
+Date: 02/03/23
+"""
+
+import sys
+import unipressed
+from unipressed import UniprotkbClient
+import pandas as pd
+import argparse
+
+#Read input filename provided (expect: .csv)
+arg_parse = argparse.ArgumentParser(description='Provide .csv file, with column titled 'Accessions', containing UniProt entry IDs .')
+arg_parse.add_argument('input_file', type=str, nargs=1, help='Input csv file containing the Uniprot accession list (required)')
+args = arg_parse.parse_args()
+uniprot_id = args.input_file[0]
+
+#data = pd.read_csv("QSHGMv2.csv", encoding='windows-1252')
+#flag for future - make more responsive/error proof for input file encoding...
+data = pd.read_csv(uniprot_id, encoding='windows-1252')
+
+def id_2_fasta(id):
+    id=str(id)
+    #access entry
+    ret=UniprotkbClient.fetch_one(id, format="json")
+    #retrieve fasta sequence
+    df=pd.json_normalize(ret["sequence"])
+    fasta=df['value'].to_string(index=False)
+    return fasta
+
+def amend(x):
+    for index, row in x.iterrows():
+        row = row.copy()
+        try:
+            x.loc[index, 'sequence']=id_2_fasta(row['Accession'])
+        except:
+            x.loc[index, 'sequence']="balls..."
+    new_x = x.iloc
+    return new_x
+
+#meat and bones of it all.
+amend(data)
+
+#Write output
+data.to_csv("out_file.csv", index=False)
